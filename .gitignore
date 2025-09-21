@@ -1,0 +1,286 @@
+# =========================
+# Python-generated files
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# =========================
+# Virtual environments / Environments
+# =========================
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.env
+.env.local
+.env.*.local
+__pypackages__/
+.lightning_studio/
+
+# =========================
+# Folders
+# =========================
+data/
+MISC/
+plots/
+instance/
+.scrapy
+.pybuilder/
+target/
+docs/_build/
+site/
+.profile_default/
+models/
+# for Oh My Posh themes
+.ohmpyosh/ 
+
+# =========================
+# Specific file types
+# =========================
+*.csv
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.hdf5
+*.parquet
+*.feather
+*.h5
+*.pkl
+*.joblib
+*.onnx
+*.pt
+*.pth
+*.sqlite
+*.db
+*.log
+*.mo
+*.pot
+*.sage.py
+*.manifest
+*.spec
+*.egg
+*.egg-info/
+.installed.cfg
+MANIFEST
+
+# =========================
+# Jupyter Notebooks
+# =========================
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# =========================
+# Python Packaging / Distribution
+# =========================
+build/
+dist/
+downloads/
+develop-eggs/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# =========================
+# Unit test / coverage reports
+# =========================
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# =========================
+# Django / Flask
+# =========================
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+.webassets-cache
+
+# =========================
+# Streamlit
+# =========================
+.streamlit/
+
+# =========================
+# IPython
+# =========================
+ipython_config.py
+
+# =========================
+# Project-specific tools
+# =========================
+.pdm.toml
+poetry.toml
+.ruff_cache/
+pyrightconfig.json
+cython_debug/
+
+# =========================
+# Misc IDE / Editor settings
+# =========================
+.spyderproject
+.spyproject
+.ropeproject
+
+# =========================
+# Celery
+# =========================
+celerybeat-schedule
+celerybeat.pid
+
+# =========================
+# Visual Studio Code
+# =========================
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+.vscode-server
+.cursor-server
+.windsurf-server
+/.vscode/
+/.vscode-server-insiders/
+.wget-hsts
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+# Ignore all local history of files
+.ionide
+
+# =========================
+# JetBrains (IntelliJ, PyCharm, WebStorm, etc.)
+# =========================
+.idea/*
+!.idea/codeStyles
+!.idea/runConfigurations
+*.iml
+modules.xml
+.idea/misc.xml
+*.ipr
+cmake-build-*/
+.idea_modules/
+atlassian-ide-plugin.xml
+out/
+
+# JetBrains plugin files
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+.idea/**/aws.xml
+.idea/**/contentModel.xml
+.idea/**/dataSources/
+.idea/**/mongoSettings.xml
+.idea/**/replstate.xml
+.idea/sonarlint/
+.idea/sonarIssues.xml
+.idea/**/markdown-navigator*
+.idea/$CACHE_FILE$
+.idea/codestream.xml
+.idea/**/azureSettings.xml
+
+# =========================
+# Vim
+# =========================
+# Swap
+[._]*.s[a-v][a-z]
+!*.svg  # comment out if you don't need vector files
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+.viminfo
+
+# Session
+Session.vim
+Sessionx.vim
+
+# Temporary
+.netrwhist
+*~
+# Auto-generated tag files
+tags
+# Persistent undo
+[._]*.un~
+
+
+# =========================
+# Git / Mercurial artifacts
+# =========================
+*.orig
+*.BACKUP.*
+*.BASE.*
+*.LOCAL.*
+*.REMOTE.*
+*_BACKUP_*.txt
+*_BASE_*.txt
+*_LOCAL_*.txt
+*_REMOTE_*.txt
+.hg/
+.hgignore
+.hgsigs
+.hgsub
+.hgsubstate
+.hgtags
+
+# =========================
+# Linux
+# =========================
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# =========================
+# MacOS
+# =========================
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+*.icloud

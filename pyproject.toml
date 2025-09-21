@@ -1,0 +1,22 @@
+[project]
+name = "aeroampscodestorm"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = "==3.11.9"
+dependencies = [
+    "datasets>=4.1.1",
+    "faiss-cpu>=1.12.0",
+    "matplotlib>=3.10.6",
+    "numpy>=2.3.3",
+    "pandas>=2.3.2",
+    "scikit-learn>=1.7.2",
+    "sentence-transformers>=5.1.0",
+    "transformers>=4.56.2",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.30.1",
+    "uv>=0.8.19",
+]
