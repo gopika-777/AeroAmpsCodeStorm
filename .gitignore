@@ -28,6 +28,7 @@ data/
 MISC/
 plots/
 results/
+outputs/
 instance/
 .scrapy
 .pybuilder/
