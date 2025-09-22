@@ -27,6 +27,7 @@ __pypackages__/
 data/
 MISC/
 plots/
+results/
 instance/
 .scrapy
 .pybuilder/
