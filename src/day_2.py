@@ -21,6 +21,7 @@ import nltk
 from nltk.stem import WordNetLemmatizer
 import joblib
 import datetime
+import unicodedata
 
 # Resampling
 from imblearn.over_sampling import SMOTE
@@ -34,12 +35,16 @@ BASE_PATH = Path(__file__).parents[1]
 DATA_PATH = BASE_PATH / "data"
 OUTPUTS_PATH = BASE_PATH / "outputs"
 OUTPUTS_PATH.mkdir(parents=True, exist_ok=True)
+RESULTS_PATH = BASE_PATH / "results"
+RESULTS_PATH.mkdir(parents=True, exist_ok=True)
 
 MODELS_PATH = BASE_PATH / "models"
 MODELS_PATH.mkdir(parents=True, exist_ok=True)
 
 TRAIN_FILE = DATA_PATH / "trainset.json"
 TEST_FILE = DATA_PATH / "testset.json"
+DEV_FILE = DATA_PATH / "dev_testset.json"
+
 
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 VALIDATION_REPORT_PATH = OUTPUTS_PATH / f"validation_report_{timestamp}.txt"
@@ -62,13 +67,15 @@ cot_prefixes = [
 lemmatizer = WordNetLemmatizer()
 
 
-def clean_text(text):
-    text = text.lower()
-    text = re.sub(r"[^a-z0-9\s]", "", text)
-    tokens = text.split()
-    tokens = [lemmatizer.lemmatize(t) for t in tokens]
-    return " ".join(tokens)
-
+def clean_text(text: str) -> str:
+    if not isinstance(text, str):
+        return ""
+    # Normalize unicode (e.g., convert full-width to ASCII, etc.)
+    text = unicodedata.normalize("NFKC", text)
+    # Replace any unicode spaces (incl. \u00a0, \u200b, etc.) with a normal space
+    text = re.sub(r"\s+", " ", text, flags=re.UNICODE)
+    # Strip leading/trailing spaces
+    return text.strip()
 
 # ---------------------------------------------------------
 # Load JSON
@@ -119,15 +126,26 @@ df_test = prepare_dataframe_all_tutors(test_data, is_train=False)
 print("Train shape:", df_train.shape)
 print("Test shape:", df_test.shape)
 
+# # ---------------------------------------------------------
+# # Features & Labels
+# # ---------------------------------------------------------
+# X_train, X_val, y_train, y_val = train_test_split(
+#     df_train["text"],
+#     df_train["Providing_Guidance"],  # <-- Changed to Track 2
+#     test_size=0.2,
+#     random_state=42,
+#     stratify=df_train["Providing_Guidance"],  # <-- Changed to Track 2
+# )
+
 # ---------------------------------------------------------
 # Features & Labels
 # ---------------------------------------------------------
 X_train, X_val, y_train, y_val = train_test_split(
     df_train["text"],
-    df_train["Mistake_Identification"],
+    df_train["Mistake_Identification"],  # <-- Reverted to Track 1
     test_size=0.2,
     random_state=42,
-    stratify=df_train["Mistake_Identification"],
+    stratify=df_train["Mistake_Identification"],  # <-- Reverted to Track 1
 )
 
 vectorizer = TfidfVectorizer(
@@ -217,6 +235,7 @@ pd.DataFrame(cm, index=resample_pipeline.classes_, columns=resample_pipeline.cla
     OUTPUTS_PATH / f"confusion_matrix_{timestamp}.csv"
 )
 
+
 # ---------------------------------------------------------
 # Self-Consistency Prediction Function
 # ---------------------------------------------------------
@@ -236,8 +255,26 @@ df_test["predicted_label"] = self_consistency_predict(
     resample_pipeline, vectorizer, df_test["text"], n_samples=3
 )
 
+# # If test set has labels, evaluate
+# if "Providing_Guidance" in df_test.columns:  # <-- Changed to Track 2
+#     y_test = df_test["Providing_Guidance"]
+#     y_test_pred = df_test["predicted_label"]
+
+#     test_acc = accuracy_score(y_test, y_test_pred)
+#     test_f1 = f1_score(y_test, y_test_pred, average="macro")
+#     print(f"\nTest Results:\nAccuracy: {test_acc}\nMacro F1: {test_f1}")
+
+# # Save CSV with predictions
+# pred_path = OUTPUTS_PATH / f"test_predictions_{timestamp}.csv"
+# df_test["actual_label"] = df_test.get("Providing_Guidance", "")  # <-- Changed to Track 2
+# df_test[["conversation_id", "tutor", "actual_label", "predicted_label"]].to_csv(
+#     pred_path, index=False
+# )
+
+# ---------------------------------------------------------
 # If test set has labels, evaluate
-if "Mistake_Identification" in df_test.columns:
+# ---------------------------------------------------------
+if "Mistake_Identification" in df_test.columns:  # <-- Reverted to Track 1
     y_test = df_test["Mistake_Identification"]
     y_test_pred = df_test["predicted_label"]
 
@@ -247,11 +284,74 @@ if "Mistake_Identification" in df_test.columns:
 
 # Save CSV with predictions
 pred_path = OUTPUTS_PATH / f"test_predictions_{timestamp}.csv"
-df_test["actual_label"] = df_test.get("Mistake_Identification", "")
+df_test["actual_label"] = df_test.get("Mistake_Identification", "")  # <-- Reverted to Track 1
 df_test[["conversation_id", "tutor", "actual_label", "predicted_label"]].to_csv(
     pred_path, index=False
 )
 
-print(f"\nTest predictions saved to {pred_path}")
-print(f"Plots and metrics saved in {OUTPUTS_PATH}")
-print(f"Trained ensemble model and vectorizer saved in {MODELS_PATH}")
+
+# # ---------------------------------------------------------
+# # Dev Set Predictions
+# # ---------------------------------------------------------
+# if DEV_FILE.exists():
+#     dev_data = load_json(DEV_FILE)
+#     df_dev = prepare_dataframe_all_tutors(dev_data, is_train=False)
+
+#     # Predict with self-consistency
+#     df_dev["predicted_label"] = self_consistency_predict(
+#         resample_pipeline, vectorizer, df_dev["text"], n_samples=3
+#     )
+
+#     # Attach predictions back to JSON structure
+#     updated_dev_data = []
+#     for item in dev_data:
+#         convo_id = item["conversation_id"]
+#         for tutor, info in item["tutor_responses"].items():
+#             match = df_dev[
+#                 (df_dev["conversation_id"] == convo_id) &
+#                 (df_dev["tutor"] == tutor)
+#             ]
+#             if not match.empty:
+#                 pred_label = match["predicted_label"].values[0]
+#                 info["annotation"] = {"Providing_Guidance": pred_label}  # <-- Changed to Track 2
+#         updated_dev_data.append(item)
+
+#     # Save as new JSON copy
+#     DEV_RESULTS_FILE = RESULTS_PATH / f"devset_with_predictions_{timestamp}.json"
+#     with open(DEV_RESULTS_FILE, "w", encoding="utf-8") as f:
+#         json.dump(updated_dev_data, f, indent=2, ensure_ascii=False)
+
+#     print(f"\nDev predictions saved to {DEV_RESULTS_FILE}")
+
+# ---------------------------------------------------------
+# Dev Set Predictions
+# ---------------------------------------------------------
+if DEV_FILE.exists():
+    dev_data = load_json(DEV_FILE)
+    df_dev = prepare_dataframe_all_tutors(dev_data, is_train=False)
+
+    # Predict with self-consistency
+    df_dev["predicted_label"] = self_consistency_predict(
+        resample_pipeline, vectorizer, df_dev["text"], n_samples=3
+    )
+
+    # Attach predictions back to JSON structure
+    updated_dev_data = []
+    for item in dev_data:
+        convo_id = item["conversation_id"]
+        for tutor, info in item["tutor_responses"].items():
+            match = df_dev[
+                (df_dev["conversation_id"] == convo_id) &
+                (df_dev["tutor"] == tutor)
+            ]
+            if not match.empty:
+                pred_label = match["predicted_label"].values[0]
+                info["annotation"] = {"Mistake_Identification": pred_label}  # <-- Reverted to Track 1
+        updated_dev_data.append(item)
+
+    # Save as new JSON copy
+    DEV_RESULTS_FILE = RESULTS_PATH / f"devset_with_predictions_{timestamp}.json"
+    with open(DEV_RESULTS_FILE, "w", encoding="utf-8") as f:
+        json.dump(updated_dev_data, f, indent=2, ensure_ascii=False)
+
+    print(f"\nDev predictions saved to {DEV_RESULTS_FILE}")
